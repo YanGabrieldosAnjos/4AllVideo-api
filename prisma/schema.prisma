@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model movies {
+  /// This field's default value can currently not be parsed: `uuid_generate_v4()`.
+  id         String    @id @default(dbgenerated())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  title      String
+  director   String
+  quantity   Int       @default(0)
+  rents      rents[]
+}
+
+model rents {
+  /// This field's default value can currently not be parsed: `uuid_generate_v4()`.
+  id         String    @id @default(dbgenerated())
+  movie_id   String
+  user_id    String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  movies     movies    @relation(fields: [movie_id], references: [id])
+  users      users     @relation(fields: [user_id], references: [id])
+}
+
+model users {
+  /// This field's default value can currently not be parsed: `uuid_generate_v4()`.
+  id         String    @id @default(dbgenerated())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  name       String
+  email      String    @unique
+  password   String
+  rents      rents[]
+}
